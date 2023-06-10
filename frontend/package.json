@@ -1,15 +1,28 @@
 {
-  "name": "frontend",
+  "name": "jitera-auction-frontend",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
+  "engines": {
+    "node": "19.4.0",
+    "npm": "9.2.0"
+  },
+  "main": "server.js",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "start": "nodemon server.js",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@fontsource/roboto": "^5.0.2",
+    "@mui/icons-material": "^5.11.16",
+    "@mui/material": "^5.13.4",
+    "axios": "^1.4.0",
+    "express": "^4.18.2",
+    "nodemon": "^2.0.22",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
@@ -22,6 +35,7 @@
     "eslint": "^8.38.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.3.4",
+    "sass": "^1.63.2",
     "typescript": "^5.0.2",
     "vite": "^4.3.9"
   }

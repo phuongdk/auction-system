@@ -1,0 +1,2 @@
+CREATE DATABASE auction;
+GRANT ALL PRIVILEGES ON DATABASE auction TO postgres;
