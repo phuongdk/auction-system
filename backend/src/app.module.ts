@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersModule } from './users/users.module';
-import { ProductsModule } from './products/products.module';
+import { UsersModule } from './api/users/users.module';
+import { ProductsModule } from './api/products/products.module';
+import { AuthGuard } from './guards/auth.guard';
 
 @Module({
   imports: [
@@ -23,7 +25,8 @@ import { ProductsModule } from './products/products.module';
     //   username: 'postgres',
     //   password: 'postgres',
     //   database: 'auction',
-    //   entities: [],
+    //   synchronize: true,
+    //   autoLoadEntities: true,
     // }),
     // For production
     TypeOrmModule.forRootAsync({
@@ -35,14 +38,20 @@ import { ProductsModule } from './products/products.module';
         database: configService.get('DB_NAME'),
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
-        entities: [],
         synchronize: true,
+        autoLoadEntities: true,
       }),
       inject: [ConfigService],
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+  ],
 })
 
 export class AppModule {}

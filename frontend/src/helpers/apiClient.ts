@@ -1,8 +1,7 @@
 import axios, { AxiosRequestConfig } from 'axios';
 
 // default
-axios.defaults.baseURL = import.meta.env.VITE_API_URL;
-
+axios.defaults.baseURL = process.env.NODE_ENV == 'production' ? import.meta.env.VITE_API_URL : 'http://localhost:3003/api';
 // content type
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 
@@ -13,21 +12,16 @@ axios.interceptors.response.use(
   },
   function (error) {
     let errorResponse = '';
+
     if (error.response && error.response.data) {
       if (
-        error.response.status === 400 &&
-        Array.isArray(error.response.data.errors)
+        error.response.status <= 500 && error.response.status >= 400
       ) {
-        errorResponse = error.response.data.errors;
-      } else if (error.response.status === 404) {
-        errorResponse = 'request_not_found';
-      } else {
-        errorResponse = error.response.data.translationCode;
+        errorResponse = error.response.data.message;
       }
     } else {
-      errorResponse = 'network_error';
+      errorResponse = 'Network error';
     }
-
     return Promise.reject(errorResponse);
   },
 );
@@ -63,15 +57,15 @@ class APIClient {
   /**
    * post given data to url
    */
-  post = (url: string, config: AxiosRequestConfig = {}) => {
-    return axios.post(url, config);
+  post = (url: string, data: any, config: AxiosRequestConfig = {}) => {
+    return axios.post(url, data, config);
   };
 
   /**
    * Update data to url
    */
-  update = (url: string, config: AxiosRequestConfig = {}) => {
-    return axios.patch(url, config);
+  update = (url: string, data: any, config: AxiosRequestConfig = {}) => {
+    return axios.patch(url, data, config);
   };
 
   /**

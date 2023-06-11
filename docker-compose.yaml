@@ -43,6 +43,7 @@ services:
       - "5432:5432"
     volumes:
       - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
+    #   - ./db_data:/var/lib/postgresql/data
     restart: always
     environment:
       - POSTGRES_USER=postgres
