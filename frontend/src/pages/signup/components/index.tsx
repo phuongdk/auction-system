@@ -14,14 +14,14 @@ import Container from '@mui/material/Container'
 import Snackbar from '@mui/material/Snackbar'
 import Alert from '@mui/material/Alert'
 
-import { post } from '../../../helpers/apiClient'
-import { API_ENDPOINT } from '../../../helpers/constants'
+import { post } from '../../../ultilities/apiClient'
+import { API_ENDPOINT, SNACKBAR_AUTO_HIDE_DURATION } from '../../../ultilities/constants'
 
 function Copyright(props: any) {
     return (
         <Typography variant='body2' color='text.secondary' align='center' {...props}>
             {'Copyright © '}
-            <Link color='inherit' to='https://phuongdk.io/'>
+            <Link target='_blank' to='https://phuongdk.github.io/'>
                 Phuongdk
             </Link>{' '}
             {new Date().getFullYear()}
@@ -67,7 +67,7 @@ const SignupComponent: React.FC<Props> = () => {
         onSubmit: async (values) => {
             try {
                 setLoading(true)
-                const result = await post(API_ENDPOINT.SIGN_UP,
+                await post(API_ENDPOINT.SIGN_UP,
                     { email: values.email, password: values.password, first_name: values.first_name, last_name: values.last_name })
                 setAlert(true)
                 setMessage({ type: 'success', text: 'Sign up successfully' })
@@ -85,7 +85,7 @@ const SignupComponent: React.FC<Props> = () => {
         <Container component='main' maxWidth='xs'>
             <Snackbar
                 open={isAlertOpen}
-                autoHideDuration={2000}
+                autoHideDuration={SNACKBAR_AUTO_HIDE_DURATION}
                 onClose={() => setAlert(false)}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             >

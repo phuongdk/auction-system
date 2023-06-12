@@ -1,12 +1,10 @@
-import './Home.css'
+import HomepageComponent from './components'
 
 const HomePage: React.FC = () => {
 
   return (
     <>
-      <div>
-        Homepage
-      </div>
+      <HomepageComponent />
     </>
   )
 }

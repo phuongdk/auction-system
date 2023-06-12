@@ -24,15 +24,11 @@ export class UsersService {
     return this.usersRepository.findOneBy({ email });
   }
 
-  findOne(id: string): Promise<AppUser | null> {
-    if (!id) {
-      return null;
-    }
-
+  findMe(id: string): Promise<AppUser | null> {
     return this.usersRepository.findOneBy({ id });
   }
 
-  async remove(id: number): Promise<void> {
-    await this.usersRepository.delete(id);
+  deposit(id: string, amount: number): any {
+    return this.usersRepository.update({ id }, {balance: amount});
   }
 }

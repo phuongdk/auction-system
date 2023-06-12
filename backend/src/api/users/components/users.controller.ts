@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, UseFilters } from '@nestjs/common';
+import { Controller, Request, Get, Post, Body, UseFilters, BadRequestException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from './users.service';
 import { CreateUserDto } from '../dto/create-user.dto';
@@ -30,18 +30,23 @@ export class UsersController {
     return user;
   }
 
-  @Get()
+  @Get('/getAll')
   findAll() {
     return this.usersService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
+  @Get('/profile')
+  findMe(@Request() request: Request) {
+    const id = request['user'].sub;
+    return this.usersService.findMe(id);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  @Post('/deposit')
+  deposit(@Request() request: Request, @Body() body) {
+    if (typeof body.amount !== 'number') {
+      throw new BadRequestException('Invalid data format');
+    }
+    const id = request['user'].sub;
+    return this.usersService.deposit(id, body.amount);
   }
 }

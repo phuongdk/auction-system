@@ -14,8 +14,9 @@ import Container from '@mui/material/Container'
 import Snackbar from '@mui/material/Snackbar'
 import Alert from '@mui/material/Alert'
 
-import { post } from '../../../helpers/apiClient'
-import { API_ENDPOINT } from '../../../helpers/constants'
+import { post, setAuthorization } from '../../../ultilities/apiClient'
+import { API_ENDPOINT, SNACKBAR_AUTO_HIDE_DURATION } from '../../../ultilities/constants'
+import { setToken } from '../../../ultilities/authUtils'
 
 interface Props { }
 
@@ -42,7 +43,8 @@ const LoginComponent: React.FC<Props> = () => {
             try {
                 setLoading(true)
                 const { access_token } : any = await post(API_ENDPOINT.SIGN_IN, { email: values.email, password: values.password })
-                localStorage.setItem('@access_token', access_token)
+                setToken(access_token)
+                setAuthorization(access_token)
                 navigate('/')
             } catch (error) {
                 setAlert(true)
@@ -58,7 +60,7 @@ const LoginComponent: React.FC<Props> = () => {
             <Container component='main' maxWidth='xs'>
                 <Snackbar
                     open={isAlertOpen}
-                    autoHideDuration={2000}
+                    autoHideDuration={SNACKBAR_AUTO_HIDE_DURATION}
                     onClose={() => setAlert(false)}
                     anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                 >
@@ -137,7 +139,7 @@ function Copyright(props: any) {
     return (
         <Typography variant='body2' color='text.secondary' align='center' {...props}>
             {'Copyright © '}
-            <a color='inherit' href='https://phuongdk.io/'>
+            <a target='_blank' href='https://phuongdk.github.io/'>
                 Phuongdk
             </a>{' '}
             {new Date().getFullYear()}

@@ -11,8 +11,11 @@ import HomeLayout from './layouts/HomeLayout.tsx'
 import LoginPage from './pages/login/index.tsx'
 import SignupPage from './pages/signup/index.tsx'
 
-import HomePage from './pages/home/Home.tsx'
+import HomePage from './pages/home/index.tsx'
 import ErrorPage from './pages/error/index.tsx'
+
+import PublicRoute from './routes/PublicRoute.tsx'
+import PrivateRoute from './routes/PrivateRoute.tsx'
 
 import './index.scss'
 
@@ -24,7 +27,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <HomePage />,
+        element: <PrivateRoute><HomePage /></PrivateRoute>,
       },
     ],
   },
@@ -34,11 +37,11 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/auth/login',
-        element: <LoginPage />,
+        element: <PublicRoute><LoginPage /></PublicRoute>,
       },
       {
         path: '/auth/signup',
-        element: <SignupPage />,
+        element: <PublicRoute><SignupPage /></PublicRoute>,
       },
     ],
   },

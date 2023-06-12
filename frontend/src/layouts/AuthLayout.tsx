@@ -3,15 +3,15 @@ import { Outlet } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 
-const darkTheme = createTheme({
+const theme = createTheme({
     palette: {
-        mode: 'dark',
+        mode: 'light',
     },
 })
 
 const AuthLayout: React.FC = () => {
     return (
-        <ThemeProvider theme={darkTheme}>
+        <ThemeProvider theme={theme}>
             <CssBaseline />
             <div className='auth-layout-wrapper'>
                 <Outlet />

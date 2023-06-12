@@ -13,6 +13,9 @@ export class Product {
     @Column({ type: 'decimal', precision: 10, scale: 2, nullable: false })
     price: number;
 
+    @Column({ type: 'decimal', precision: 10, scale: 2, nullable: false })
+    bid_price: number;
+
     @Column({ type: 'varchar', nullable: false })
     status: string;
 
@@ -31,6 +34,7 @@ export class Product {
     @DeleteDateColumn({type: 'timestamp with time zone', default: null})
     deleted_at: Date;
 
+    @Exclude()
     @ManyToOne(() => AppUser, (user) => user.products)
     user: AppUser
 }
