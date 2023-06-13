@@ -1,11 +1,10 @@
 import { Controller, Request, Get, Post, Body, Param, Delete, BadRequestException, ParseUUIDPipe } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from '../dto/create-product.dto';
-import { UpdateProductDto } from '../dto/update-product.dto';
 
 @Controller('products')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+  constructor(private readonly productsService: ProductsService) { }
 
   @Post()
   async create(@Request() request: Request, @Body() body: CreateProductDto) {
@@ -14,8 +13,13 @@ export class ProductsController {
       userId,
       body.name,
       body.price,
-      1000
+      body.time_window
     );
+  }
+
+  @Get('getAll')
+  findAll() {
+    return this.productsService.findAll();
   }
 
   @Get('bid')
@@ -43,7 +47,7 @@ export class ProductsController {
   //   return this.productsService.update(+id);
   // }
 
-  @Post('/publish/:id')
+  @Post('publish/:id')
   publishItem(@Request() request: Request, @Param('id', ParseUUIDPipe) productId: string, @Body() body) {
     if (typeof body.action !== 'string') {
       throw new BadRequestException('Invalid data format');

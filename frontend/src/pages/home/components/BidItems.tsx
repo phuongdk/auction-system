@@ -7,12 +7,13 @@ import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
-import { Items } from '../interfaces/dataResponse'
+import { Item } from '../../../ultilities/interfaces'
+import { green, red } from '@mui/material/colors'
 
 interface props {
-  items: Items[]
+  items: Item[]
   handleOpenBidDialog: () => void
-  handleRefreshItem: () => void
+  handleRefreshItem: (id: string) => void
 }
 
 const BidItems: React.FC<props> = (props) => {
@@ -32,19 +33,19 @@ const BidItems: React.FC<props> = (props) => {
               image={`https://source.unsplash.com/random?wallpapers/${index}`}
             />
             <CardContent sx={{ flexGrow: 1 }}>
-              <Typography gutterBottom variant='h5' component='h2'>
+              <Typography align='center' gutterBottom variant='h4' component='h2'>
                 {item.name}
               </Typography>
-              <Typography>
-                {item.price}
+              <Typography align='center' color={green['A700']} gutterBottom>
+                Starting Price: {item.price}$
               </Typography>
-              <Typography>
-                {item.bid_price}
+              <Typography align='center' color={red['A400']} gutterBottom>
+                Bid Price: {item.bid_price}$
               </Typography>
             </CardContent>
-            <CardActions>
-              <Button size='small' onClick={handleOpenBidDialog}>Bid</Button>
-              <Button size='small' onClick={handleRefreshItem}>Refresh</Button>
+            <CardActions sx={{ justifyContent: 'center' }}>
+              <Button fullWidth={true} size='small' variant='contained' color='primary' onClick={handleOpenBidDialog}>Bid</Button>
+              <Button fullWidth={true} size='small' variant='contained' color='primary' onClick={() => {handleRefreshItem(item.id)}}>Refresh</Button>
             </CardActions>
           </Card>
         </Grid>

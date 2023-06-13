@@ -7,12 +7,14 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './api/users/users.module';
 import { ProductsModule } from './api/products/products.module';
+import { BidsModule } from './api/bids/bids.module';
 import { AuthGuard } from './guards/auth.guard';
 
 @Module({
   imports: [
     UsersModule,
     ProductsModule,
+    BidsModule,
     ConfigModule.forRoot({
       ignoreEnvFile: true,
       isGlobal: true

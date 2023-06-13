@@ -18,7 +18,7 @@ const BidDialog: React.FC<Props> = (props) => {
   const [isLoading, setLoading] = useState(false);
   const formik = useFormik({
     initialValues: {
-      bid_price: 1,
+      bid_price: 100,
     },
     validationSchema: object({
       bid_price: number()
@@ -28,6 +28,7 @@ const BidDialog: React.FC<Props> = (props) => {
     }),
     onSubmit: async (values) => {
       console.log('value', values)
+      setLoading(false)
       return;
       // try {
       //   setLoading(true)

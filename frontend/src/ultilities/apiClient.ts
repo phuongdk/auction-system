@@ -16,12 +16,12 @@ axios.interceptors.response.use(
     let errorResponse = ''
 
     if (error.response && error.response.data) {
-      if (error.response.status === 500) {
+      if (error.response.status == 500) {
         errorResponse = 'Server error'
       } else if (
         error.response.status < 500 && error.response.status >= 400
       ) {
-        if (error.response.status === 401) {
+        if (error.response.status == 401) {
           const navigate = useNavigate()
           removeAuthorization()
           removeToken()

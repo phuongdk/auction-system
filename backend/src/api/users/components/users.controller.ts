@@ -11,7 +11,7 @@ export class UsersController {
   constructor(private authService: AuthService, private usersService: UsersService) { }
 
   @Public()
-  @Post('/signup')
+  @Post('signup')
   async create(@Body() body: CreateUserDto) {
     const user = await this.authService.signup(
       body.email,
@@ -24,28 +24,33 @@ export class UsersController {
 
   @Public()
   @UseFilters(new LoginExceptionFilter())
-  @Post('/signin')
+  @Post('signin')
   async signin(@Body() body: LoginUserDto) {
     const user = await this.authService.signin(body.email, body.password);
     return user;
   }
 
-  @Get('/getAll')
+  @Get('getAll')
   findAll() {
     return this.usersService.findAll();
   }
 
-  @Get('/profile')
+  @Get('profile')
   findMe(@Request() request: Request) {
     const id = request['user'].sub;
     return this.usersService.findMe(id);
   }
 
-  @Post('/deposit')
+  @Post('deposit')
   deposit(@Request() request: Request, @Body() body) {
     if (typeof body.amount !== 'number') {
       throw new BadRequestException('Invalid data format');
     }
+
+    if (typeof body.amount === 'number' && (body.amount < 1 || body.amount > 100000)) {
+      throw new BadRequestException('Invalid number');
+    }
+
     const id = request['user'].sub;
     return this.usersService.deposit(id, body.amount);
   }

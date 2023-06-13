@@ -13,13 +13,13 @@ import NewItemDialog from './NewItemDialog'
 import DepositDialog from './DepositDialog'
 import BidDialog from './BidDialog'
 
-import { get } from '../../../ultilities/apiClient'
-import { Items } from '../interfaces/dataResponse'
-import { API_ENDPOINT, SNACKBAR_AUTO_HIDE_DURATION } from '../../../ultilities/constants'
+import { get, post, remove } from '../../../ultilities/apiClient'
+import { Item } from '../../../ultilities/interfaces'
+import { API_ENDPOINT } from '../../../ultilities/constants'
 
 const HomepageComponent: React.FC = () => {
-  const [bidItems, setBidItems] = useState<Items[] | []>([])
-  const [myItems, setMyItems] = useState<Items[] | []>([])
+  const [bidItems, setBidItems] = useState<Item[] | []>([])
+  const [myItems, setMyItems] = useState<Item[] | []>([])
   const [selectItem, setSelectItem] = useState('bid')
 
   const [openNewDialog, setOpenNewDialog] = useState(false)
@@ -37,9 +37,14 @@ const HomepageComponent: React.FC = () => {
   const fetchBidItems = async () => {
     const result: any = await get(API_ENDPOINT.GET_BID_ITEMS)
     if (result) {
-      result.price = parseFloat(result.price)
-      console.log('result', result)
       setBidItems(result)
+    }
+  }
+
+  const fetchMyItems = async () => {
+    const result: any = await get(API_ENDPOINT.GET_MY_ITEMS)
+    if (result) {
+      setMyItems(result)
     }
   }
 
@@ -67,16 +72,69 @@ const HomepageComponent: React.FC = () => {
     setOpenBidDialog(false)
   }
 
-  const handleRefreshItem = () => {
-
+  const changeItem = (type: string) => {
+    if (type == 'bid') {
+      fetchBidItems()
+    } else {
+      fetchMyItems()
+    }
+    setSelectItem(type)
   }
 
-  const handlePublishItem = () => {
-
+  const handleRefreshItem = async (itemId: string) => {
+    try {
+      const result: any = await get(`${API_ENDPOINT.REFRESH_ITEM}/${itemId}`)
+      if (result) {
+        const index = bidItems.findIndex((item: Item) => {
+          return item.id == result.id
+        })
+        const newItems = Object.assign([...bidItems], { [index]: result });
+        setBidItems(newItems);
+      }
+    } catch (error) {
+      console.log('error', error)
+    }
   }
 
-  const handleDeleteItem = () => {
+  const handlePublishItem = async (itemId: string) => {
+    if (!confirm('Are you sure?')) {
+      return;
+    }
 
+    try {
+      const result: any = await post(
+        `${API_ENDPOINT.CHANGE_ITEM}/${itemId}`,
+        { action: 'published' })
+
+      if (result && result.affected == 1) {
+        fetchMyItems();
+      }
+    } catch (error) {
+      console.log('error', error)
+    }
+  }
+
+  const handleDeleteItem = async (itemId: string) => {
+    if (!confirm('Are you sure?')) {
+      return;
+    }
+
+    try {
+      await remove(
+        `${API_ENDPOINT.DELETE_ITEM}/${itemId}`)
+      setTimeout(() => {
+        fetchMyItems()
+      }, 200);
+    } catch (error) {
+      console.log('error', error)
+    }
+  }
+
+  const handleUpdateMyItems = () => {
+    if (selectItem == 'bid') {
+      return
+    }
+    fetchMyItems()
   }
 
   return (
@@ -129,8 +187,8 @@ const HomepageComponent: React.FC = () => {
             spacing={2}
             justifyContent='center'
           >
-            <Button variant='contained'>Ongoing bid items</Button>
-            <Button variant='contained'>My items</Button>
+            <Button variant='contained' onClick={() => { changeItem('bid') }}>Ongoing bid items</Button>
+            <Button variant='contained' onClick={() => { changeItem('mine') }}>My items</Button>
           </Stack>
         </Container>
       </Box>
@@ -156,35 +214,37 @@ const HomepageComponent: React.FC = () => {
             </Typography>
           )
         }
+        {
+          selectItem === 'bid' && bidItems.length == 0 && (
+            <Typography variant='h5' align='center' color='text.secondary' paragraph>
+              No bid items found...
+            </Typography>
+          )
+        }
+        {
+          selectItem === 'mine' && myItems.length == 0 && (
+            <Typography variant='h5' align='center' color='text.secondary' paragraph>
+              No items found...
+            </Typography>
+          )
+        }
         <Grid container spacing={4}>
           {
-            selectItem === 'bid' && (
-              bidItems.length ? (
-                <BidItems
-                  items={bidItems}
-                  handleOpenBidDialog={handleOpenBidDialog}
-                  handleRefreshItem={handleRefreshItem}
-                />
-              ) : (
-                <Typography variant='h5' align='center' color='text.secondary' paragraph>
-                  No items found...
-                </Typography>
-              )
+            selectItem === 'bid' && bidItems.length && (
+              <BidItems
+                items={bidItems}
+                handleOpenBidDialog={handleOpenBidDialog}
+                handleRefreshItem={handleRefreshItem}
+              />
             )
           }
           {
-            selectItem === 'mine' && (
-              myItems.length ? (
-                <MyItems
-                  items={myItems}
-                  handlePublishItem={handlePublishItem}
-                  handleDeleteItem={handleDeleteItem}
-                />
-              ) : (
-                <Typography variant='h5' align='center' color='text.secondary' paragraph>
-                  No items found...
-                </Typography>
-              )
+            selectItem === 'mine' && myItems.length && (
+              <MyItems
+                items={myItems}
+                handlePublishItem={handlePublishItem}
+                handleDeleteItem={handleDeleteItem}
+              />
             )
           }
         </Grid>
@@ -193,6 +253,7 @@ const HomepageComponent: React.FC = () => {
       {/* Dialog Section */}
       <NewItemDialog
         openNewDialog={openNewDialog}
+        handleUpdateMyItems={handleUpdateMyItems}
         handleCloseNewDialog={handleCloseNewDialog}
       />
       <DepositDialog

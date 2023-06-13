@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { useFormik } from 'formik'
 import { number, object } from 'yup'
 import Box from '@mui/material/Box'
@@ -9,13 +9,18 @@ import DialogTitle from '@mui/material/DialogTitle'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 
+import { post } from '../../../ultilities/apiClient'
+import { API_ENDPOINT } from '../../../ultilities/constants'
+import { UserContext } from '../../../ultilities/contexts'
+
 interface Props {
   openDepositDialog: boolean
   handleCloseDepositDialog: () => void
 }
 
 const DepositDialog: React.FC<Props> = (props) => {
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false)
+  const userInfo = useContext(UserContext)
   const formik = useFormik({
     initialValues: {
       amount: 1,
@@ -27,21 +32,19 @@ const DepositDialog: React.FC<Props> = (props) => {
         .required('Required field'),
     }),
     onSubmit: async (values) => {
-      console.log('value', values)
-      return;
-      // try {
-      //   setLoading(true)
-      //   const { access_token }: any = await post(API_ENDPOINT.SIGN_IN, { email: values.email, password: values.password })
-      //   localStorage.setItem('@access_token', access_token)
-      //   navigate('/')
-      // } catch (error) {
-      //   setAlert(true)
-      //   setErrorMessage(error)
-      // } finally {
-      //   setLoading(false)
-      // }
+      try {
+        setLoading(true)
+        const result: any = await post(API_ENDPOINT.DEPOSIT, { amount: values.amount })
+        if (result) {
+          userInfo.updateData({...result})
+        }
+      } catch (error) {
+        console.log('error', error)
+      } finally {
+        setLoading(false)
+      }
     },
-  });
+  })
   return (
     <>
       <Dialog fullWidth={true} maxWidth='sm' open={props.openDepositDialog} onClose={props.handleCloseDepositDialog}>

@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany } from 'typeorm';
 import { Exclude, Expose } from 'class-transformer';
 import { Product } from 'src/api/products/entities/product.entity';
+import { Bid } from 'src/api/bids/entities/bid.entity';
 
 @Entity()
 export class AppUser {
@@ -20,8 +21,22 @@ export class AppUser {
     @Column({ type: 'varchar', nullable: false })
     last_name: string;
 
-    @Column({ type: 'decimal', precision: 10, scale: 2, nullable: false })
+    @Column({ type: 'float', nullable: false })
     balance: number;
+
+    @Column({ type: 'float', nullable: true })
+    temporary_hold: number;
+
+    @Expose()
+    get full_name(): string {
+        return `${this.first_name} ${this.last_name}`;
+    };
+
+    @OneToMany(() => Product, (product) => product.user)
+    products: Product[];
+
+    @OneToMany(() => Bid, (bid) => bid.user)
+    bids: Bid[];
 
     @Exclude()
     @CreateDateColumn({type: 'timestamp with time zone', default: () => "CURRENT_TIMESTAMP(6)"})
@@ -35,15 +50,7 @@ export class AppUser {
     @DeleteDateColumn({type: 'timestamp with time zone', default: null})
     deleted_at: Date;
 
-    @Expose()
-    get full_name(): string {
-        return `${this.first_name} ${this.last_name}`;
-    }
-
-    @OneToMany(() => Product, (product) => product.user)
-    products: Product[];
-
-    constructor(user: Partial<AppUser>) {
-        Object.assign(this, user);
-    }
+    // constructor(user: Partial<AppUser>) {
+    //     Object.assign(this, user);
+    // }
 }

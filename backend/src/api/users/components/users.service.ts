@@ -20,7 +20,7 @@ export class UsersService {
     return this.usersRepository.find();
   }
 
-  async findEmail(email: string): Promise<AppUser | null> {
+  findEmail(email: string): Promise<AppUser | null> {
     return this.usersRepository.findOneBy({ email });
   }
 
@@ -28,7 +28,9 @@ export class UsersService {
     return this.usersRepository.findOneBy({ id });
   }
 
-  deposit(id: string, amount: number): any {
-    return this.usersRepository.update({ id }, {balance: amount});
+  async deposit(id: string, amount: number): Promise<any> {
+    const user = await this.findMe(id);
+    await this.usersRepository.update({ id }, {balance: parseFloat((user.balance + amount).toFixed(2))});
+    return await this.findMe(id);
   }
 }

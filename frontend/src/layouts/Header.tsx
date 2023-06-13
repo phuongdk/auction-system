@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import AppBar from '@mui/material/AppBar'
@@ -11,15 +11,33 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import Button from '@mui/material/Button'
 import HomeIcon from '@mui/icons-material/Home'
-import { pink } from '@mui/material/colors'
+import { pink, green } from '@mui/material/colors'
 
-import { removeAuthorization } from '../ultilities/apiClient'
+import { removeAuthorization, get } from '../ultilities/apiClient'
 import { removeToken } from '../ultilities/authUtils'
+import { API_ENDPOINT } from '../ultilities/constants'
+import { UserContext } from '../ultilities/contexts'
 
 const HomePage: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  const userInfo = useContext(UserContext)
   const open = Boolean(anchorEl)
   const navigate = useNavigate()
+
+  const fetchProfile = async () => {
+    const result: any = await get(API_ENDPOINT.PROFILE)
+    if (result) {
+      userInfo.updateData(result)
+    }
+  }
+
+  useEffect(() => {
+    try {
+      fetchProfile()
+    } catch (error) {
+      console.log('error', error)
+    }
+  }, [])
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
@@ -47,8 +65,8 @@ const HomePage: React.FC = () => {
             </Link>
           </Toolbar>
           <Toolbar>
-            <Typography color='inherit' noWrap>
-              Balance: 100.00$
+            <Typography>
+              <Typography color={green['A400']} component='span'>{userInfo.balance}$</Typography>
             </Typography>
             <Button
               id='basic-button'
@@ -72,7 +90,7 @@ const HomePage: React.FC = () => {
                 'aria-labelledby': 'basic-button',
               }}
             >
-              <MenuItem>Phuong Do</MenuItem>
+              <MenuItem>{userInfo.full_name}</MenuItem>
               <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
           </Toolbar>
