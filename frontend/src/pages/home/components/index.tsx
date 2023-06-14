@@ -16,7 +16,7 @@ import BidDialog from './BidDialog'
 import { get, post, remove } from '../../../ultilities/apiClient'
 import { UserContext } from '../../../ultilities/contexts'
 import { Item } from '../../../ultilities/interfaces'
-import { API_ENDPOINT } from '../../../ultilities/constants'
+import { API_ENDPOINT, BID_INTERVAL_COUNTER } from '../../../ultilities/constants'
 
 const HomepageComponent: React.FC = () => {
   const [bidItems, setBidItems] = useState<Item[] | []>([])
@@ -160,10 +160,32 @@ const HomepageComponent: React.FC = () => {
     const index = bidItems.findIndex((item: Item) => {
       return item.id == data.productId
     })
-    const newItems = Object.assign([
-      ...bidItems],
-      { [index]: { ...bidItems[index], bid_price: data.bid_price } })
+    const newItems = [...bidItems]
+    let counter = BID_INTERVAL_COUNTER
+
+    newItems[index] = {
+      ...newItems[index],
+      bid_price: data.bid_price,
+      bid_interval: counter
+    }
     setBidItems(newItems)
+
+    const bidIntervals = setInterval(() => {
+      counter -= 1;
+      if (counter == 0) {
+        clearInterval(bidIntervals)
+      }
+
+      const updateNewItems = Object.assign([
+        ...newItems],
+        {
+          [index]: {
+            ...newItems[index],
+            bid_interval: counter
+          }
+        })
+      setBidItems(updateNewItems)
+    }, 1000)
   }
 
   return (

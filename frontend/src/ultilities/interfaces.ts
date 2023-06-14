@@ -6,6 +6,7 @@ export interface Item {
     bid_price: number
     status: string
     time_window: number
+    bid_interval?: number
 }
 
 export interface UserInfo {

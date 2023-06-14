@@ -50,12 +50,20 @@ const BidItems: React.FC<props> = (props) => {
                 size='small'
                 variant='contained'
                 color='primary'
-                disabled={item.userId == userId}
-                onClick={() => {handleOpenBidDialog(item)}}
-                >
-                  Bid
+                disabled={item.userId == userId ||
+                  (typeof item.bid_interval == 'number' && item?.bid_interval > 0)
+                }
+                onClick={() => { handleOpenBidDialog(item) }}
+              >
+                {
+                  typeof item.bid_interval === 'number' && item?.bid_interval > 0 ? (
+                    <span>{item.bid_interval}s to bid</span>
+                  ) : (
+                    <span>Bid</span>
+                  )
+                }
               </Button>
-              <Button fullWidth={true} size='small' variant='contained' color='primary' onClick={() => {handleRefreshItem(item.id)}}>Refresh Price</Button>
+              <Button fullWidth={true} size='small' variant='contained' color='primary' onClick={() => { handleRefreshItem(item.id) }}>Refresh Price</Button>
             </CardActions>
           </Card>
         </Grid>

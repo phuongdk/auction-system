@@ -8,12 +8,6 @@ export class Bid {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    // @Column({type: 'varchar', nullable: false})
-    // userId: string;
-
-    // @Column({type: 'varchar', nullable: false})
-    // productId: string;
-
     @Column({ type: 'float', nullable: false })
     bid_attempt_price: number;
 

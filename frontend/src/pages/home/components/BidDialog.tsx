@@ -29,8 +29,9 @@ const BidDialog: React.FC<Props> = (props) => {
   const [message, setMessage] = useState<any>({ type: 'success', text: '' })
   const { selectedItem, userId, openBidDialog, handleCloseBidDialog, handleUpdateBidData } = props
   const formik = useFormik({
+    enableReinitialize: true,
     initialValues: {
-      bid_price: 100,
+      bid_price: selectedItem.bid_price + 1 || 100,
     },
     validationSchema: object({
       bid_price: number()
