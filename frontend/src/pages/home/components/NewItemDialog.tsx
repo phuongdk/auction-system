@@ -22,7 +22,7 @@ interface Props {
 }
 
 const DialogNewItem: React.FC<Props> = (props) => {
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false)
   const [isAlertOpen, setAlert] = useState(false)
   const [message, setMessage] = useState<any>({ type: 'success', text: '' })
   const formik = useFormik({

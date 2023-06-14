@@ -19,6 +19,7 @@ export class ProductsService {
 
   async createItem(userId: string, name: string, price: number, time_window: number): Promise<Product | null> {
     const user = await this.usersRepository.findOneBy({ id: userId });
+    price = parseFloat((price).toFixed(2));
     const product = this.productsRepository.create({ name, price, bid_price: price, status: 'unpublished', time_window, user });
     return this.productsRepository.save(product);
   }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
@@ -14,17 +14,29 @@ import DepositDialog from './DepositDialog'
 import BidDialog from './BidDialog'
 
 import { get, post, remove } from '../../../ultilities/apiClient'
+import { UserContext } from '../../../ultilities/contexts'
 import { Item } from '../../../ultilities/interfaces'
 import { API_ENDPOINT } from '../../../ultilities/constants'
 
 const HomepageComponent: React.FC = () => {
   const [bidItems, setBidItems] = useState<Item[] | []>([])
   const [myItems, setMyItems] = useState<Item[] | []>([])
-  const [selectItem, setSelectItem] = useState('bid')
+  const [selectItemType, setSelectItemType] = useState('bid')
+  const [selectedItem, setSelectedItem] = useState<Item>({
+    id: '',
+    userId: '',
+    name: '',
+    price: 0,
+    bid_price: 0,
+    status: '',
+    time_window: 0
+  })
 
   const [openNewDialog, setOpenNewDialog] = useState(false)
   const [openDepositDialog, setOpenDepositDialog] = useState(false)
   const [openBidDialog, setOpenBidDialog] = useState(false)
+
+  const userInfo = useContext(UserContext)
 
   useEffect(() => {
     try {
@@ -64,8 +76,9 @@ const HomepageComponent: React.FC = () => {
     setOpenDepositDialog(false)
   }
 
-  const handleOpenBidDialog = () => {
+  const handleOpenBidDialog = async (item: Item) => {
     setOpenBidDialog(true)
+    setSelectedItem(item)
   }
 
   const handleCloseBidDialog = () => {
@@ -78,7 +91,7 @@ const HomepageComponent: React.FC = () => {
     } else {
       fetchMyItems()
     }
-    setSelectItem(type)
+    setSelectItemType(type)
   }
 
   const handleRefreshItem = async (itemId: string) => {
@@ -88,8 +101,8 @@ const HomepageComponent: React.FC = () => {
         const index = bidItems.findIndex((item: Item) => {
           return item.id == result.id
         })
-        const newItems = Object.assign([...bidItems], { [index]: result });
-        setBidItems(newItems);
+        const newItems = Object.assign([...bidItems], { [index]: result })
+        setBidItems(newItems)
       }
     } catch (error) {
       console.log('error', error)
@@ -98,7 +111,7 @@ const HomepageComponent: React.FC = () => {
 
   const handlePublishItem = async (itemId: string) => {
     if (!confirm('Are you sure?')) {
-      return;
+      return
     }
 
     try {
@@ -107,7 +120,7 @@ const HomepageComponent: React.FC = () => {
         { action: 'published' })
 
       if (result && result.affected == 1) {
-        fetchMyItems();
+        fetchMyItems()
       }
     } catch (error) {
       console.log('error', error)
@@ -116,7 +129,7 @@ const HomepageComponent: React.FC = () => {
 
   const handleDeleteItem = async (itemId: string) => {
     if (!confirm('Are you sure?')) {
-      return;
+      return
     }
 
     try {
@@ -124,17 +137,33 @@ const HomepageComponent: React.FC = () => {
         `${API_ENDPOINT.DELETE_ITEM}/${itemId}`)
       setTimeout(() => {
         fetchMyItems()
-      }, 200);
+      }, 200)
     } catch (error) {
       console.log('error', error)
     }
   }
 
   const handleUpdateMyItems = () => {
-    if (selectItem == 'bid') {
+    if (selectItemType == 'bid') {
       return
     }
     fetchMyItems()
+  }
+
+  const handleUpdateBidData = (data: any) => {
+    userInfo.updateData(
+      {
+        ...userInfo,
+        balance: data.balance,
+        temporary_hold: data.temporary_hold
+      })
+    const index = bidItems.findIndex((item: Item) => {
+      return item.id == data.productId
+    })
+    const newItems = Object.assign([
+      ...bidItems],
+      { [index]: { ...bidItems[index], bid_price: data.bid_price } })
+    setBidItems(newItems)
   }
 
   return (
@@ -194,7 +223,7 @@ const HomepageComponent: React.FC = () => {
       </Box>
       <Container sx={{ py: 8 }} maxWidth='xl'>
         {
-          selectItem === 'bid' ? (
+          selectItemType === 'bid' ? (
             <Typography
               component='h2'
               variant='h3'
@@ -215,14 +244,14 @@ const HomepageComponent: React.FC = () => {
           )
         }
         {
-          selectItem === 'bid' && bidItems.length == 0 && (
+          selectItemType === 'bid' && bidItems.length == 0 && (
             <Typography variant='h5' align='center' color='text.secondary' paragraph>
               No bid items found...
             </Typography>
           )
         }
         {
-          selectItem === 'mine' && myItems.length == 0 && (
+          selectItemType === 'mine' && myItems.length == 0 && (
             <Typography variant='h5' align='center' color='text.secondary' paragraph>
               No items found...
             </Typography>
@@ -230,8 +259,9 @@ const HomepageComponent: React.FC = () => {
         }
         <Grid container spacing={4}>
           {
-            selectItem === 'bid' && bidItems.length && (
+            selectItemType === 'bid' && bidItems.length && (
               <BidItems
+                userId={userInfo.id}
                 items={bidItems}
                 handleOpenBidDialog={handleOpenBidDialog}
                 handleRefreshItem={handleRefreshItem}
@@ -239,7 +269,7 @@ const HomepageComponent: React.FC = () => {
             )
           }
           {
-            selectItem === 'mine' && myItems.length && (
+            selectItemType === 'mine' && myItems.length && (
               <MyItems
                 items={myItems}
                 handlePublishItem={handlePublishItem}
@@ -261,8 +291,11 @@ const HomepageComponent: React.FC = () => {
         handleCloseDepositDialog={handleCloseDepositDialog}
       />
       <BidDialog
+        userId={userInfo.id}
+        selectedItem={selectedItem}
         openBidDialog={openBidDialog}
         handleCloseBidDialog={handleCloseBidDialog}
+        handleUpdateBidData={handleUpdateBidData}
       />
       {/* End Dialog Section */}
     </>

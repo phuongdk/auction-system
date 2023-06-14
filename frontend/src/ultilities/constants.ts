@@ -8,7 +8,8 @@ export const API_ENDPOINT = {
     'CREATE_NEW_ITEM': '/products',
     'CHANGE_ITEM': '/products/publish',
     'REFRESH_ITEM': '/products',
-    'DELETE_ITEM': '/products'
+    'DELETE_ITEM': '/products',
+    'BID_ITEM': '/bids'
 }
 
 export const SNACKBAR_AUTO_HIDE_DURATION = 3000

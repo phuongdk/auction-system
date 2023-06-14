@@ -24,7 +24,7 @@ export class AppUser {
     @Column({ type: 'float', nullable: false })
     balance: number;
 
-    @Column({ type: 'float', nullable: true })
+    @Column({ type: 'float', default: null, nullable: true })
     temporary_hold: number;
 
     @Expose()

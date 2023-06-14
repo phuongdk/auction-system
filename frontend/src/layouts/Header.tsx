@@ -16,6 +16,7 @@ import { pink, green } from '@mui/material/colors'
 import { removeAuthorization, get } from '../ultilities/apiClient'
 import { removeToken } from '../ultilities/authUtils'
 import { API_ENDPOINT } from '../ultilities/constants'
+import { capitalizeAndMatchLetters } from '../ultilities/helpers'
 import { UserContext } from '../ultilities/contexts'
 
 const HomePage: React.FC = () => {
@@ -67,6 +68,13 @@ const HomePage: React.FC = () => {
           <Toolbar>
             <Typography>
               <Typography color={green['A400']} component='span'>{userInfo.balance}$</Typography>
+              {userInfo.temporary_hold && (
+                <Typography
+                  color={pink['A400']}
+                  component='span'>
+                  {` (${parseFloat((userInfo.balance - userInfo.temporary_hold).toFixed(2))})`}$
+                </Typography>
+              )}
             </Typography>
             <Button
               id='basic-button'
@@ -76,9 +84,9 @@ const HomePage: React.FC = () => {
               onClick={handleClick}
             >
               <Avatar
-                sx={{ bgcolor: pink[500] }}
+                sx={{ bgcolor: pink[500], height: '50px', width: '50px' }}
               >
-                N
+                {userInfo.full_name ? capitalizeAndMatchLetters(userInfo.full_name) : ''}
               </Avatar>
             </Button>
             <Menu
@@ -91,6 +99,7 @@ const HomePage: React.FC = () => {
               }}
             >
               <MenuItem>{userInfo.full_name}</MenuItem>
+
               <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
           </Toolbar>

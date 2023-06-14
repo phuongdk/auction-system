@@ -8,7 +8,7 @@ export class CreateProductDto {
 
   @IsNumber()
   @Min(1)
-  @Max(100000)
+  @Max(1000)
   price: number;
 
   @IsNumber()

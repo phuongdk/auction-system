@@ -19,8 +19,9 @@ const UserProvider: React.FC<props> = ({ children }) => {
     email: '',
     first_name: '',
     last_name: '',
-    full_name: 'keke',
+    full_name: '',
     balance: 0,
+    temporary_hold: null
   }
   const [userInfo, updateData] = useState(user);
   return (

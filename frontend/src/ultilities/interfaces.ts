@@ -1,8 +1,9 @@
 export interface Item {
     id: string
+    userId: string
     name: string
-    price: string
-    bid_price: string
+    price: number
+    bid_price: number
     status: string
     time_window: number
 }
@@ -14,5 +15,6 @@ export interface UserInfo {
     last_name: string
     full_name: string
     balance: number
+    temporary_hold: null
     updateData: (data: UserInfo) => void
 }

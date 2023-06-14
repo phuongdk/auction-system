@@ -7,23 +7,24 @@ import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
-import { Item } from '../../../ultilities/interfaces'
 import { green, red } from '@mui/material/colors'
+import { Item } from '../../../ultilities/interfaces'
 
 interface props {
+  userId: string
   items: Item[]
-  handleOpenBidDialog: () => void
+  handleOpenBidDialog: (item: Item) => void
   handleRefreshItem: (id: string) => void
 }
 
 const BidItems: React.FC<props> = (props) => {
-  const { items, handleOpenBidDialog, handleRefreshItem } = props
+  const { items, userId, handleOpenBidDialog, handleRefreshItem } = props
   return (
     <>
       {items.map((item, index) => (
         <Grid item key={index} xs={12} sm={6} md={3}>
           <Card
-            sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+            sx={{ cursor: 'pointer', height: '100%', display: 'flex', flexDirection: 'column' }}
           >
             <CardMedia
               component='div'
@@ -44,8 +45,17 @@ const BidItems: React.FC<props> = (props) => {
               </Typography>
             </CardContent>
             <CardActions sx={{ justifyContent: 'center' }}>
-              <Button fullWidth={true} size='small' variant='contained' color='primary' onClick={handleOpenBidDialog}>Bid</Button>
-              <Button fullWidth={true} size='small' variant='contained' color='primary' onClick={() => {handleRefreshItem(item.id)}}>Refresh</Button>
+              <Button
+                fullWidth={true}
+                size='small'
+                variant='contained'
+                color='primary'
+                disabled={item.userId == userId}
+                onClick={() => {handleOpenBidDialog(item)}}
+                >
+                  Bid
+              </Button>
+              <Button fullWidth={true} size='small' variant='contained' color='primary' onClick={() => {handleRefreshItem(item.id)}}>Refresh Price</Button>
             </CardActions>
           </Card>
         </Grid>

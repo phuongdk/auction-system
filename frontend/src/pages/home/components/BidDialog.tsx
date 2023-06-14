@@ -8,14 +8,26 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
+import Snackbar from '@mui/material/Snackbar'
+import Alert from '@mui/material/Alert'
+
+import { post } from '../../../ultilities/apiClient'
+import { Item } from '../../../ultilities/interfaces'
+import { API_ENDPOINT, SNACKBAR_AUTO_HIDE_DURATION } from '../../../ultilities/constants'
 
 interface Props {
+  selectedItem: Item
+  userId: string
   openBidDialog: boolean
   handleCloseBidDialog: () => void
+  handleUpdateBidData: (data: any) => void
 }
 
 const BidDialog: React.FC<Props> = (props) => {
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false)
+  const [isAlertOpen, setAlert] = useState(false)
+  const [message, setMessage] = useState<any>({ type: 'success', text: '' })
+  const { selectedItem, userId, openBidDialog, handleCloseBidDialog, handleUpdateBidData } = props
   const formik = useFormik({
     initialValues: {
       bid_price: 100,
@@ -27,26 +39,37 @@ const BidDialog: React.FC<Props> = (props) => {
         .required('Required field'),
     }),
     onSubmit: async (values) => {
-      console.log('value', values)
-      setLoading(false)
-      return;
-      // try {
-      //   setLoading(true)
-      //   const { access_token }: any = await post(API_ENDPOINT.SIGN_IN, { email: values.email, password: values.password })
-      //   localStorage.setItem('@access_token', access_token)
-      //   navigate('/')
-      // } catch (error) {
-      //   setAlert(true)
-      //   setErrorMessage(error)
-      // } finally {
-      //   setLoading(false)
-      // }
+      try {
+        setLoading(true)
+        const result: any = await post(API_ENDPOINT.BID_ITEM,
+          { userId: userId, productId: selectedItem.id, bid_attempt_amount: values.bid_price })
+        if (result) {
+          setAlert(true)
+          setMessage({ type: 'success', text: 'Bid item successfully' })
+          handleUpdateBidData(result)
+        }
+      } catch (error) {
+        setAlert(true)
+        setMessage({ type: 'error', text: error })
+      } finally {
+        setLoading(false)
+      }
     },
   });
   return (
     <>
-      <Dialog fullWidth={true} maxWidth='sm' open={props.openBidDialog} onClose={props.handleCloseBidDialog}>
-        <DialogTitle>Bid Item Name</DialogTitle>
+      <Snackbar
+        open={isAlertOpen}
+        autoHideDuration={SNACKBAR_AUTO_HIDE_DURATION}
+        onClose={() => setAlert(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert onClose={() => setAlert(false)} severity={message.type} sx={{ width: '100%' }}>
+          {message.text}
+        </Alert>
+      </Snackbar>
+      <Dialog fullWidth={true} maxWidth='sm' open={openBidDialog} onClose={handleCloseBidDialog}>
+        <DialogTitle>{selectedItem.name}</DialogTitle>
         <DialogContent>
           <Box component='form' onSubmit={formik.handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
@@ -75,7 +98,7 @@ const BidDialog: React.FC<Props> = (props) => {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={props.handleCloseBidDialog}>Cancel</Button>
+          <Button onClick={handleCloseBidDialog}>Cancel</Button>
         </DialogActions>
       </Dialog>
     </>
