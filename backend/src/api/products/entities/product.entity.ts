@@ -46,8 +46,11 @@ export class Product {
   created_at: Date;
 
   @Exclude()
-  @UpdateDateColumn({ type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP(6)' })
+  @UpdateDateColumn({ type: 'timestamp with time zone', nullable: true, default: null  })
   updated_at: Date;
+
+  @Column({ type: 'timestamp with time zone', nullable: true, default: null })
+  published_at: Date;
 
   @Exclude()
   @DeleteDateColumn({ type: 'timestamp with time zone', default: null })

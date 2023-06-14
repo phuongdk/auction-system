@@ -6,7 +6,9 @@ export interface Item {
     bid_price: number
     status: string
     time_window: number
+    published_at: string
     bid_interval?: number
+    countdown_time?: string
 }
 
 export interface UserInfo {

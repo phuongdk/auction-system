@@ -1,5 +1,4 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { AppUser } from '../users/entities/appuser.entity';
@@ -17,7 +16,6 @@ export class BidsService {
     @InjectRepository(Bid)
     private bidsRepository: Repository<Bid>
   ) { }
-  private readonly logger = new Logger(BidsService.name);
 
   async createBid(
     userId: string,
@@ -102,11 +100,6 @@ export class BidsService {
     } finally {
       await queryRunner.release();
     }
-  }
-
-  // @Cron('*/30 * * * * *')
-  handleCron() {
-    this.logger.debug('Called when the current second is 5');
   }
 
   findAll(): Promise<Bid[] | []> {

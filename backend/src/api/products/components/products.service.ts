@@ -10,7 +10,7 @@ export class ProductsService {
     @InjectRepository(AppUser)
     private usersRepository: Repository<AppUser>,
     @InjectRepository(Product)
-    private productsRepository: Repository<Product>,
+    private productsRepository: Repository<Product>
   ) { }
 
   findAll(): Promise<Product[] | []> {
@@ -52,10 +52,14 @@ export class ProductsService {
     });
   }
 
-  publishItem(userId: string, productId: string, action: string): any {
-    return this.productsRepository.update(
+  async publishItem(userId: string, productId: string, action: string): Promise<Product | null> {
+    await this.productsRepository.update(
       { id: productId, user: { id: userId } },
-      { status: action });
+      { status: action, published_at: new Date() });
+    const product = await this.productsRepository.findOne({
+      where: { id: productId, user: { id: userId } },
+    });
+    return product;
   }
 
   deleteItem(id: string): any {

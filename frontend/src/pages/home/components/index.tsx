@@ -29,7 +29,9 @@ const HomepageComponent: React.FC = () => {
     price: 0,
     bid_price: 0,
     status: '',
-    time_window: 0
+    time_window: 0,
+    published_at: '',
+    countdown_time: ''
   })
 
   const [openNewDialog, setOpenNewDialog] = useState(false)
@@ -119,7 +121,7 @@ const HomepageComponent: React.FC = () => {
         `${API_ENDPOINT.CHANGE_ITEM}/${itemId}`,
         { action: 'published' })
 
-      if (result && result.affected == 1) {
+      if (result) {
         fetchMyItems()
       }
     } catch (error) {
@@ -171,7 +173,7 @@ const HomepageComponent: React.FC = () => {
     setBidItems(newItems)
 
     const bidIntervals = setInterval(() => {
-      counter -= 1;
+      counter -= 1
       if (counter == 0) {
         clearInterval(bidIntervals)
       }
@@ -186,6 +188,10 @@ const HomepageComponent: React.FC = () => {
         })
       setBidItems(updateNewItems)
     }, 1000)
+  }
+
+  const handleUpdateWhenItemExpires = (item: Item) => {
+    console.log('up up', item)
   }
 
   return (
@@ -287,6 +293,7 @@ const HomepageComponent: React.FC = () => {
                 items={bidItems}
                 handleOpenBidDialog={handleOpenBidDialog}
                 handleRefreshItem={handleRefreshItem}
+                handleUpdateWhenItemExpires={handleUpdateWhenItemExpires}
               />
             )
           }

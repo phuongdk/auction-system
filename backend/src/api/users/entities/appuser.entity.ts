@@ -39,15 +39,15 @@ export class AppUser {
     bids: Bid[];
 
     @Exclude()
-    @CreateDateColumn({type: 'timestamp with time zone', default: () => "CURRENT_TIMESTAMP(6)"})
+    @CreateDateColumn({ type: 'timestamp with time zone', default: () => "CURRENT_TIMESTAMP(6)" })
     created_at: Date;
 
     @Exclude()
-    @UpdateDateColumn({type: 'timestamp with time zone', default: () => "CURRENT_TIMESTAMP(6)"})
+    @UpdateDateColumn({ type: 'timestamp with time zone', nullable: true, default: null })
     updated_at: Date;
 
     @Exclude()
-    @DeleteDateColumn({type: 'timestamp with time zone', default: null})
+    @DeleteDateColumn({ type: 'timestamp with time zone', default: null })
     deleted_at: Date;
 
     // constructor(user: Partial<AppUser>) {

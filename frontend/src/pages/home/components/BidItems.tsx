@@ -8,6 +8,7 @@ import CardMedia from '@mui/material/CardMedia'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import { green, red } from '@mui/material/colors'
+import CountDownTillExpires from './CountDown'
 import { Item } from '../../../ultilities/interfaces'
 
 interface props {
@@ -15,10 +16,11 @@ interface props {
   items: Item[]
   handleOpenBidDialog: (item: Item) => void
   handleRefreshItem: (id: string) => void
+  handleUpdateWhenItemExpires: (item: Item) => void
 }
 
 const BidItems: React.FC<props> = (props) => {
-  const { items, userId, handleOpenBidDialog, handleRefreshItem } = props
+  const { items, userId, handleOpenBidDialog, handleRefreshItem, handleUpdateWhenItemExpires } = props
   return (
     <>
       {items.map((item, index) => (
@@ -43,6 +45,10 @@ const BidItems: React.FC<props> = (props) => {
               <Typography align='center' color={red['A400']} gutterBottom>
                 Bid Price: {item.bid_price}$
               </Typography>
+              <CountDownTillExpires
+                item={item}
+                handleUpdateWhenItemExpires={handleUpdateWhenItemExpires}
+              />
             </CardContent>
             <CardActions sx={{ justifyContent: 'center' }}>
               <Button
