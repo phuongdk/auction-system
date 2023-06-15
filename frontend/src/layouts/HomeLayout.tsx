@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useLayoutEffect, useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
@@ -8,6 +8,7 @@ import Footer from './Footer'
 import { setAuthorization } from '../ultilities/apiClient'
 import { getToken } from '../ultilities/authUtils'
 import { UserContext } from '../ultilities/contexts'
+
 
 interface props {
   children?: React.ReactNode
@@ -38,7 +39,8 @@ const theme = createTheme({
 })
 
 const HomeLayout: React.FC = () => {
-  useEffect(() => {
+
+  useLayoutEffect(() => {
     const token = getToken()
     if (token) {
       setAuthorization(token)

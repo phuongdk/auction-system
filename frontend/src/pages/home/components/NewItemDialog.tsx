@@ -47,11 +47,11 @@ const DialogNewItem: React.FC<Props> = (props) => {
           name: 'time_window',
           test(value, ctx) {
             const currentHours = convertHoursToMilliseconds(value)
-            const lowerBound = convertHoursToMilliseconds('01:00')
-            const upperBound = convertHoursToMilliseconds('23:59')
+            const lowerBound = convertHoursToMilliseconds('01:00:00')
+            const upperBound = convertHoursToMilliseconds('23:59:59')
 
             if (currentHours < lowerBound || currentHours > upperBound) {
-              return ctx.createError({ message: 'Time must be within range: 01:00 - 23:59' })
+              return ctx.createError({ message: 'Time must be within range: 01:00:00 - 23:59:59' })
             }
             return true
           }
