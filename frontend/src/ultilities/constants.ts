@@ -9,7 +9,8 @@ export const API_ENDPOINT = {
     'CHANGE_ITEM': '/products/publish',
     'REFRESH_ITEM': '/products',
     'DELETE_ITEM': '/products',
-    'BID_ITEM': '/bids'
+    'BID_ITEM': '/bids',
+    'TRANSFER_ITEM': '/bids/transfer'
 }
 export const SNACKBAR_AUTO_HIDE_DURATION = 3000
 export const BID_INTERVAL_COUNTER = 5

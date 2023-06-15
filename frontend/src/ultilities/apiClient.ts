@@ -10,7 +10,7 @@ axios.defaults.headers.common['Content-Type'] = 'application/json'
 // intercepting to capture errors
 axios.interceptors.response.use(
   function (response) {
-    return response.data ? response.data : response
+    return response.data
   },
   function (error) {
     let errorResponse = ''

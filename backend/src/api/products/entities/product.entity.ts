@@ -32,6 +32,9 @@ export class Product {
   @Column({ type: 'int' })
   time_window: number;
 
+  @Column({ type: 'smallint', default: 0, nullable: false })
+  bid_phase: number;
+
   @Column({ nullable: false })
   userId: string;
 

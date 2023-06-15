@@ -11,23 +11,32 @@ export class Bid {
     @Column({ type: 'float', nullable: false })
     bid_attempt_price: number;
 
+    @Column({ type: 'smallint', nullable: true })
+    bid_phase: number;
+
+    @Column({ nullable: false })
+    userId: string;
+
+    @Column({ nullable: false })
+    productId: string;
+
     @Exclude()
     @ManyToOne(() => AppUser, (user) => user.bids)
     user: AppUser;
 
     @Exclude()
-    @ManyToOne(() => Product, (product) => product.bids)
+    @ManyToOne(() => Product, (product) => product.bids, { onDelete: 'CASCADE' })
     product: Product;
 
     @Exclude()
-    @CreateDateColumn({type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP(6)'})
+    @CreateDateColumn({ type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP(6)' })
     created_at: Date;
 
     @Exclude()
-    @UpdateDateColumn({type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP(6)'})
+    @UpdateDateColumn({ type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP(6)' })
     updated_at: Date;
 
     @Exclude()
-    @DeleteDateColumn({type: 'timestamp with time zone', default: null})
+    @DeleteDateColumn({ type: 'timestamp with time zone', default: null })
     deleted_at: Date;
 }

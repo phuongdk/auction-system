@@ -34,7 +34,7 @@ export class ProductsController {
   }
 
   @Get(':id')
-  async refreshItem(@Param('id') id: string) {
+  async refreshItem(@Param('id', ParseUUIDPipe) id: string) {
     const product = await this.productsService.refreshItem(id);
     if (product && product.status === 'unpublished') {
       throw new BadRequestException('Item not found');
@@ -49,11 +49,12 @@ export class ProductsController {
 
   @Post('publish/:id')
   publishItem(@Request() request: Request, @Param('id', ParseUUIDPipe) productId: string, @Body() body) {
-    if (typeof body.action !== 'string') {
+    if (body.action !== 'published' || typeof body.bid_phase !== 'number') {
       throw new BadRequestException('Invalid data format');
     }
+
     const userId = request['user'].sub;
-    return this.productsService.publishItem(userId, productId, body.action);
+    return this.productsService.publishItem(userId, productId, body.action, body.bid_phase);
   }
 
   @Delete(':id')

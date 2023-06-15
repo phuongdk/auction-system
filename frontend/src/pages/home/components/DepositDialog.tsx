@@ -28,7 +28,7 @@ const DepositDialog: React.FC<Props> = (props) => {
     validationSchema: object({
       amount: number()
         .min(1, 'Minimum 1 dollar')
-        .max(1000, 'Maximum 1000 dollars')
+        .max(100000, 'Maximum 100000 dollars')
         .required('Required field'),
     }),
     onSubmit: async (values) => {

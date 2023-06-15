@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_GUARD } from '@nestjs/core';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { AppController } from './app.controller';
@@ -15,6 +16,7 @@ import { AuthGuard } from './guards/auth.guard';
     UsersModule,
     ProductsModule,
     BidsModule,
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       ignoreEnvFile: true,
       isGlobal: true

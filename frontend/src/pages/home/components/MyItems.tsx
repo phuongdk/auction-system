@@ -12,7 +12,7 @@ import { green, red } from '@mui/material/colors'
 
 interface props {
   items: Item[]
-  handlePublishItem: (id: string) => void
+  handlePublishItem: (id: Item) => void
   handleDeleteItem: (id: string) => void
 }
 
@@ -44,7 +44,7 @@ const MyItems: React.FC<props> = (props) => {
               </Typography>
             </CardContent>
             <CardActions sx={{ justifyContent: 'center' }}>
-              <Button fullWidth={true} size='small' variant='contained' color='primary' onClick={() => {handlePublishItem(item.id)}}>Publish</Button>
+              <Button fullWidth={true} size='small' variant='contained' color='primary' onClick={() => {handlePublishItem(item)}}>Publish</Button>
               <Button fullWidth={true} size='small' variant='contained' color='error' onClick={() => {handleDeleteItem(item.id)}}>Delete</Button>
             </CardActions>
           </Card>

@@ -28,6 +28,7 @@ const HomepageComponent: React.FC = () => {
     name: '',
     price: 0,
     bid_price: 0,
+    bid_phase: 0,
     status: '',
     time_window: 0,
     published_at: '',
@@ -51,14 +52,14 @@ const HomepageComponent: React.FC = () => {
   const fetchBidItems = async () => {
     const result: any = await get(API_ENDPOINT.GET_BID_ITEMS)
     if (result) {
-      setBidItems(result)
+      setBidItems([...result])
     }
   }
 
   const fetchMyItems = async () => {
     const result: any = await get(API_ENDPOINT.GET_MY_ITEMS)
     if (result) {
-      setMyItems(result)
+      setMyItems([...result])
     }
   }
 
@@ -103,7 +104,7 @@ const HomepageComponent: React.FC = () => {
         const index = bidItems.findIndex((item: Item) => {
           return item.id == result.id
         })
-        const newItems = Object.assign([...bidItems], { [index]: result })
+        const newItems = Object.assign([...bidItems], { [index]: { ...result } })
         setBidItems(newItems)
       }
     } catch (error) {
@@ -111,16 +112,18 @@ const HomepageComponent: React.FC = () => {
     }
   }
 
-  const handlePublishItem = async (itemId: string) => {
+  const handlePublishItem = async (item: Item) => {
     if (!confirm('Are you sure?')) {
       return
     }
 
     try {
       const result: any = await post(
-        `${API_ENDPOINT.CHANGE_ITEM}/${itemId}`,
-        { action: 'published' })
-
+        `${API_ENDPOINT.CHANGE_ITEM}/${item.id}`,
+        {
+          action: 'published',
+          bid_phase: item.bid_phase + 1
+        })
       if (result) {
         fetchMyItems()
       }
@@ -190,9 +193,29 @@ const HomepageComponent: React.FC = () => {
     }, 1000)
   }
 
-  const handleUpdateWhenItemExpires = (item: Item) => {
-    console.log('up up', item)
+  const handleUpdateWhenItemExpires = async (item: Item) => {
+    try {
+      const result: any = await post(`${API_ENDPOINT.TRANSFER_ITEM}/${item.id}`,
+        {
+          bid_phase: item.bid_phase
+        })
+
+      if (result) {
+        if (selectItemType == 'bid') {
+          fetchBidItems()
+        } else {
+          fetchMyItems()
+        }
+        const result: any = await get(API_ENDPOINT.PROFILE)
+        if (result) {
+          userInfo.updateData({ ...result })
+        }
+      }
+    } catch (error) {
+      console.log('error', error)
+    }
   }
+
 
   return (
     <>

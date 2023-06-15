@@ -4,6 +4,7 @@ export interface Item {
     name: string
     price: number
     bid_price: number
+    bid_phase: number
     status: string
     time_window: number
     published_at: string

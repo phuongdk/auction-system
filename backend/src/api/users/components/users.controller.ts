@@ -47,7 +47,7 @@ export class UsersController {
       throw new BadRequestException('Invalid data format');
     }
 
-    if (typeof body.amount === 'number' && (body.amount < 1 || body.amount > 1000)) {
+    if (typeof body.amount === 'number' && (body.amount < 1 || body.amount > 100000)) {
       throw new BadRequestException('Invalid number');
     }
 

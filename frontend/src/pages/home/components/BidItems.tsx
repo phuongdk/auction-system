@@ -43,12 +43,16 @@ const BidItems: React.FC<props> = (props) => {
                 Starting Price: {item.price}$
               </Typography>
               <Typography align='center' color={red['A400']} gutterBottom>
-                Bid Price: {item.bid_price}$
+                Current Bid Price: {item.bid_price}$
               </Typography>
-              <CountDownTillExpires
-                item={item}
-                handleUpdateWhenItemExpires={handleUpdateWhenItemExpires}
-              />
+              {
+                item.published_at && (
+                  <CountDownTillExpires
+                    item={item}
+                    handleUpdateWhenItemExpires={handleUpdateWhenItemExpires}
+                  />
+                )
+              }
             </CardContent>
             <CardActions sx={{ justifyContent: 'center' }}>
               <Button
@@ -69,7 +73,17 @@ const BidItems: React.FC<props> = (props) => {
                   )
                 }
               </Button>
-              <Button fullWidth={true} size='small' variant='contained' color='primary' onClick={() => { handleRefreshItem(item.id) }}>Refresh Price</Button>
+              <Button
+                fullWidth={true}
+                size='small'
+                variant='contained'
+                color='primary'
+                disabled={
+                  (typeof item.bid_interval == 'number' && item?.bid_interval > 0)
+                }
+                onClick={() => { handleRefreshItem(item.id) }}>
+                Refresh Price
+              </Button>
             </CardActions>
           </Card>
         </Grid>

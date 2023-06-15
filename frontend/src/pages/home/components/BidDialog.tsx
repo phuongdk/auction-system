@@ -43,11 +43,16 @@ const BidDialog: React.FC<Props> = (props) => {
       try {
         setLoading(true)
         const result: any = await post(API_ENDPOINT.BID_ITEM,
-          { userId: userId, productId: selectedItem.id, bid_attempt_amount: values.bid_price })
+          {
+            userId: userId, productId: selectedItem.id,
+            bid_attempt_amount: values.bid_price,
+            bid_phase: selectedItem.bid_phase
+          })
         if (result) {
           setAlert(true)
           setMessage({ type: 'success', text: 'Bid item successfully' })
           handleUpdateBidData(result)
+          handleCloseBidDialog()
         }
       } catch (error) {
         setAlert(true)

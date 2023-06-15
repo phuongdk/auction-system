@@ -46,20 +46,24 @@ export class ProductsService {
     });
   }
 
-  refreshItem(id: string): Promise<Product | null> {
+  async refreshItem(id: string): Promise<Product | null> {
     return this.productsRepository.findOneBy({
       id
     });
   }
 
-  async publishItem(userId: string, productId: string, action: string): Promise<Product | null> {
-    await this.productsRepository.update(
+  async publishItem(userId: string, productId: string, action: string, bid_phase: number): Promise<Product | null> {
+    const result = await this.productsRepository.update(
       { id: productId, user: { id: userId } },
-      { status: action, published_at: new Date() });
-    const product = await this.productsRepository.findOne({
-      where: { id: productId, user: { id: userId } },
-    });
-    return product;
+      { status: action, bid_phase, published_at: new Date() });
+
+    if (result && result.affected == 1) {
+      const product = await this.productsRepository.findOne({
+        where: { id: productId, user: { id: userId } },
+      });
+      return product;
+    }
+    return null;
   }
 
   deleteItem(id: string): any {

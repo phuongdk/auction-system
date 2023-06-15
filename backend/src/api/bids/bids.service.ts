@@ -20,12 +20,26 @@ export class BidsService {
   async createBid(
     userId: string,
     productId: string,
-    bid_attempt_amount: number) {
+    bid_attempt_amount: number,
+    bid_phase: number) {
     const user = await this.usersRepository.findOneBy({ id: userId });
     const product = await this.productsRepository.findOneBy({ id: productId, status: 'published' });
 
     if (userId === product.userId) {
       throw new BadRequestException('Cannot bid your item');
+    }
+
+    if (!product) {
+      throw new BadRequestException('Invalid item');
+    }
+
+    const dateExpires = new Date(product.published_at).getTime() + product.time_window;
+
+    const now = new Date().getTime();
+    const difference = dateExpires - now;
+
+    if (difference < 0) {
+      throw new BadRequestException('Cannot bid expired item');
     }
 
     if (user.temporary_hold && user.temporary_hold > 0) {
@@ -46,10 +60,10 @@ export class BidsService {
     }
 
     const queryRunner = this.dataSource.createQueryRunner();
-    let bid = null;
-
     await queryRunner.connect();
     await queryRunner.startTransaction('SERIALIZABLE');
+
+    let bid = null;
     try {
       // await new Promise(resolve => setTimeout(resolve, 10000));
       bid = await this.bidsRepository.findOne({
@@ -61,7 +75,7 @@ export class BidsService {
           created_at: "DESC",
         },
       }
-      )
+      );
 
       if (bid) {
         user.temporary_hold =
@@ -78,7 +92,8 @@ export class BidsService {
         {
           user: { id: userId },
           product: { id: productId },
-          bid_attempt_price: bid_attempt_amount
+          bid_attempt_price: bid_attempt_amount,
+          bid_phase
         }
       );
       const newUser = await this.usersRepository.save(user);
@@ -92,13 +107,111 @@ export class BidsService {
         balance: newUser.balance,
         temporary_hold: newUser.temporary_hold,
         bid_price: newProduct.bid_price
-      }
+      };
       return result;
     } catch (error) {
-      console.log('error transaction', error);
+      console.log('error transaction create bid', error);
       await queryRunner.rollbackTransaction();
     } finally {
       await queryRunner.release();
+    }
+  }
+
+  async transferItem(userId: string, productId: string, bid_phase: number): Promise<any> {
+    const bid = await this.bidsRepository.findOne({
+      relations: {
+        user: true,
+        product: true,
+      },
+      where: {
+        productId,
+        bid_phase
+      },
+      order: {
+        bid_attempt_price: "DESC",
+      },
+    });
+
+    // Check if item not exist or never bid
+    if (!bid) {
+      const product = await this.productsRepository.findOneBy({ id: productId });
+      if (!product) {
+        throw new BadRequestException('Invalid product');
+      }
+
+      if (product.status == 'unpublished') {
+        return { refresh: true }
+      }
+
+      const queryRunner = this.dataSource.createQueryRunner();
+      await queryRunner.connect();
+      await queryRunner.startTransaction('SERIALIZABLE');
+
+      try {
+        this.productsRepository.createQueryBuilder()
+          .setLock('pessimistic_write')
+          .update(Product)
+          .set({ status: 'unpublished' })
+          .where("id = :id", { id: productId })
+          .execute()
+        await this.productsRepository.save(product);
+        await queryRunner.commitTransaction();
+        return { putback: true };
+      } catch (error) {
+        console.log('error transaction put back item', error);
+        await queryRunner.rollbackTransaction();
+      } finally {
+        await queryRunner.release();
+      }
+    }
+
+    // Detect if a request coming from a successful bid
+    if (bid.user.id == userId) {
+      const user = await this.usersRepository.findOneBy({ id: userId });
+      const product = await this.productsRepository.findOneBy({ id: productId });
+
+      // Deduct user balance
+      user.balance -= bid.bid_attempt_price;
+      user.temporary_hold -= bid.bid_attempt_price;
+      if (user.temporary_hold == 0) {
+        user.temporary_hold = null;
+      }
+
+      // // Transfer product
+      product.userId = userId;
+      product.price = bid.bid_attempt_price;
+      product.bid_price = bid.bid_attempt_price;
+      product.status = 'unpublished';
+      product.published_at = null;
+      await this.usersRepository.save(user);
+      await this.productsRepository.save(product);
+      return { transfer: true };
+    } else {
+      // If a request coming from a failed bid
+      const newBid = await this.bidsRepository.findOne({
+        where: {
+          userId,
+          productId,
+          bid_phase
+        },
+        order: {
+          bid_attempt_price: "DESC",
+        },
+      });
+
+      if (!newBid) {
+        throw new BadRequestException('Invalid bid')
+      }
+
+      const user = await this.usersRepository.findOneBy({ id: userId });
+
+      // Payback user balance
+      user.temporary_hold -= newBid.bid_attempt_price;
+      if (user.temporary_hold == 0) {
+        user.temporary_hold = null;
+      }
+      await this.usersRepository.save(user);
+      return { payback: true };
     }
   }
 

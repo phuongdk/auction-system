@@ -61,7 +61,10 @@ const DialogNewItem: React.FC<Props> = (props) => {
       try {
         setLoading(true)
         const result: any = await post(API_ENDPOINT.CREATE_NEW_ITEM,
-          { name: values.name, price: values.price, time_window: convertHoursToMilliseconds(values.time_window) })
+          { name: values.name,
+            price: values.price,
+            time_window: convertHoursToMilliseconds(values.time_window)
+          })
         if (result) {
           setAlert(true)
           setMessage({ type: 'success', text: 'Create item successfully' })
