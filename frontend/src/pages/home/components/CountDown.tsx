@@ -32,7 +32,7 @@ const CountDownTillExpires: React.FC<props> = (props) => {
       {
         renderTime && (
           <Typography align='center' color={red['A400']} gutterBottom>
-            {`${renderTime} until expiry`}
+            {renderTime ? `${renderTime} until expiry` : 'Item expired'}
           </Typography>
         )
       }

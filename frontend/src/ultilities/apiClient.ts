@@ -1,5 +1,4 @@
 import axios, { AxiosRequestConfig } from 'axios'
-import { useNavigate } from 'react-router-dom'
 import { removeToken } from './authUtils'
 
 // default
@@ -22,10 +21,9 @@ axios.interceptors.response.use(
         error.response.status < 500 && error.response.status >= 400
       ) {
         if (error.response.status == 401) {
-          const navigate = useNavigate()
           removeAuthorization()
           removeToken()
-          navigate('/auth/login')
+          window.location.reload()
         } else {
           errorResponse = error.response.data.message
         }
