@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios'
-import { removeToken } from './authUtils'
+import { setToken, setRefreshToken, removeToken, removeRefreshToken, getRefreshToken } from './authUtils'
+import { API_ENDPOINT } from './constants'
 
 // default
 axios.defaults.baseURL = process.env.NODE_ENV == 'production' ? import.meta.env.VITE_API_URL : 'http://localhost:3003/api'
@@ -11,7 +12,7 @@ axios.interceptors.response.use(
   function (response) {
     return response.data
   },
-  function (error) {
+  async function (error) {
     let errorResponse = ''
 
     if (error.response && error.response.data) {
@@ -23,8 +24,19 @@ axios.interceptors.response.use(
         if (error.response.status == 401) {
           removeAuthorization()
           removeToken()
+          removeRefreshToken()
           window.location.reload()
-        } else {
+        } else if (error.response.status == 403) {
+          axios.post(API_ENDPOINT.REFRESH_TOKEN, { token: getRefreshToken() })
+            .then((result: any) => {
+              setToken(result.access_token)
+              setRefreshToken(result.refresh_token)
+              error.config.headers.Authorization = `Bearer ${result.access_token}`
+              return axios.request(error.config)
+            })
+            .catch(() => Promise.reject(error))
+        }
+        else {
           errorResponse = error.response.data.message
         }
       }

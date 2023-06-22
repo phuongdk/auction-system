@@ -10,6 +10,7 @@ import { UsersModule } from './api/users/users.module';
 import { ProductsModule } from './api/products/products.module';
 import { BidsModule } from './api/bids/bids.module';
 import { AuthGuard } from './guards/auth.guard';
+import { AppUser } from './api/users/entities/appuser.entity';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { AuthGuard } from './guards/auth.guard';
       ignoreEnvFile: true,
       isGlobal: true
     }),
+    TypeOrmModule.forFeature([AppUser]),
     // For development
     // TypeOrmModule.forRoot({
     //   type: 'postgres',
@@ -58,4 +60,4 @@ import { AuthGuard } from './guards/auth.guard';
   ],
 })
 
-export class AppModule {}
+export class AppModule { }

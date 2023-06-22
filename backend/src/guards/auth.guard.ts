@@ -1,18 +1,26 @@
 import { Reflector } from '@nestjs/core';
 import {
+    Injectable,
     CanActivate,
     ExecutionContext,
-    Injectable,
+    ForbiddenException,
     UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
+import { AppUser } from '../api/users/entities/appuser.entity';
 import { jwtSecret, IS_PUBLIC_KEY } from 'src/ultilities/constants';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-    constructor(private jwtService: JwtService, private reflector: Reflector) { }
+    constructor(
+        @InjectRepository(AppUser)
+        private usersRepository: Repository<AppUser>,
+        private jwtService: JwtService,
+        private reflector: Reflector) { }
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
@@ -37,8 +45,16 @@ export class AuthGuard implements CanActivate {
                 }
             );
             request['user'] = payload;
-        } catch {
-            throw new UnauthorizedException();
+            const user = await this.usersRepository.findOneBy({ id: payload.sub });
+            if (!user || (user && !user.refreshToken)) {
+                throw new UnauthorizedException();
+            }
+        } catch (error) {
+            if (error.expiredAt) {
+                throw new ForbiddenException('Token Expired');
+            } else {
+                throw new UnauthorizedException();
+            }
         }
         return true;
     }

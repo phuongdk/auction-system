@@ -16,7 +16,7 @@ import Alert from '@mui/material/Alert'
 
 import { post, setAuthorization } from '../../../ultilities/apiClient'
 import { API_ENDPOINT, SNACKBAR_AUTO_HIDE_DURATION } from '../../../ultilities/constants'
-import { setToken } from '../../../ultilities/authUtils'
+import { setToken, setRefreshToken } from '../../../ultilities/authUtils'
 
 interface Props { }
 
@@ -42,8 +42,9 @@ const LoginComponent: React.FC<Props> = () => {
         onSubmit: async (values) => {
             try {
                 setLoading(true)
-                const { access_token } : any = await post(API_ENDPOINT.SIGN_IN, { email: values.email, password: values.password })
+                const { access_token, refresh_token } : any = await post(API_ENDPOINT.SIGN_IN, { email: values.email, password: values.password })
                 setToken(access_token)
+                setRefreshToken(refresh_token)
                 setAuthorization(access_token)
                 navigate('/')
             } catch (error) {

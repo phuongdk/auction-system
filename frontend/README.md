@@ -1,3 +1,3 @@
-# Jitera Auction Frontend
+# Auction Frontend
 Build with Vite
 

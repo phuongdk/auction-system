@@ -235,7 +235,7 @@ const HomepageComponent: React.FC = () => {
             color='text.primary'
             gutterBottom
           >
-            Jitera Auction System
+            Auction System
           </Typography>
           <Typography variant='h5' align='center' color='text.secondary' paragraph>
             Bid any items you want...

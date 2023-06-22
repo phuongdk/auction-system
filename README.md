@@ -1,4 +1,4 @@
-# Jitera Auction System
+# Small Auction System
 
 <!-- TABLE OF CONTENTS -->
 <details open>
@@ -99,7 +99,7 @@ Start services
 $ docker-compose start
 ```
 ## Production Environment
-Application live at: https://jitera-auction-system.phuongdk.io/
+Application live at: https://auction-system.phuongdk.io/
 
 Infrastructures underneath backed by AWS
 

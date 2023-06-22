@@ -14,7 +14,7 @@ import HomeIcon from '@mui/icons-material/Home'
 import { pink, green } from '@mui/material/colors'
 
 import { removeAuthorization, get } from '../ultilities/apiClient'
-import { removeToken } from '../ultilities/authUtils'
+import { removeToken, removeRefreshToken } from '../ultilities/authUtils'
 import { API_ENDPOINT } from '../ultilities/constants'
 import { capitalizeAndMatchLetters } from '../ultilities/helpers'
 import { UserContext } from '../ultilities/contexts'
@@ -47,6 +47,7 @@ const HomePage: React.FC = () => {
   const handleLogout = () => {
     removeAuthorization()
     removeToken()
+    removeRefreshToken()
     handleCloseUserDropdown()
     navigate('/auth/login')
   }

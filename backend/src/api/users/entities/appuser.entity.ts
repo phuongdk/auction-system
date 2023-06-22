@@ -27,6 +27,9 @@ export class AppUser {
     @Column({ type: 'float', default: null, nullable: true })
     temporary_hold: number;
 
+    @Column({ type: 'varchar', nullable: true })
+    refreshToken: string;
+
     @Expose()
     get full_name(): string {
         return `${this.first_name} ${this.last_name}`;

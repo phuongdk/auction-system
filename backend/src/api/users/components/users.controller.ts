@@ -41,6 +41,15 @@ export class UsersController {
     return this.usersService.findMe(id);
   }
 
+  @Public()
+  @Post('refreshToken')
+  refreshToken(@Body() body) {
+    if (typeof body.token !== 'string') {
+      throw new BadRequestException('Incorrect token');
+    }
+    return this.authService.refreshToken(body.token);
+  }
+
   @Post('deposit')
   deposit(@Request() request: Request, @Body() body) {
     if (typeof body.amount !== 'number') {

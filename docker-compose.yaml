@@ -1,28 +1,28 @@
 version: '3'
 services:
-  jitera-auction-frontend:
+  auction-frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
       args:
         VITE_API_URL: http://localhost:3003/api
-    image: jitera-auction-frontend
-    container_name: jitera-auction-frontend
+    image: auction-frontend
+    container_name: auction-frontend
     volumes:
       - /app/dist
       - /app/node_modules
     ports:
       - "3002:3002"
     networks:
-      - jitera-network
-  jitera-auction-backend:
+      - auction-network
+  auction-backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    image: jitera-auction-backend
-    container_name: jitera-auction-backend
+    image: auction-backend
+    container_name: auction-backend
     environment:
-      - DB_HOST=jitera-auction-database
+      - DB_HOST=auction-database
       - DB_PORT=5432
       - DB_NAME=auction
       - DB_USERNAME=postgres
@@ -33,12 +33,12 @@ services:
     ports:
       - "3003:3003"
     networks:
-      - jitera-network
+      - auction-network
     depends_on:
-      - jitera-auction-database
-  jitera-auction-database:
+      - auction-database
+  auction-database:
     image: postgres:15
-    container_name: jitera-auction-database
+    container_name: auction-database
     ports:
       - "5432:5432"
     volumes:
@@ -49,7 +49,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     networks:
-      - jitera-network
+      - auction-network
 networks:
-  jitera-network:
+  auction-network:
     driver: bridge

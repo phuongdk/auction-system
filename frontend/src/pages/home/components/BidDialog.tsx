@@ -44,7 +44,8 @@ const BidDialog: React.FC<Props> = (props) => {
         setLoading(true)
         const result: any = await post(API_ENDPOINT.BID_ITEM,
           {
-            userId: userId, productId: selectedItem.id,
+            userId: userId,
+            productId: selectedItem.id,
             bid_attempt_amount: values.bid_price,
             bid_phase: selectedItem.bid_phase
           })

@@ -1,6 +1,7 @@
 export const API_ENDPOINT = {
     'SIGN_IN': '/users/signin',
     'SIGN_UP': '/users/signup',
+    'REFRESH_TOKEN': '/users/refreshToken',
     'PROFILE': '/users/profile',
     'DEPOSIT': '/users/deposit',
     'GET_BID_ITEMS': '/products/bid',
